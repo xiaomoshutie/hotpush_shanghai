@@ -1,20 +1,16 @@
-name: 上海热榜推送
-
+name: 热榜推送企业微信
 on:
   schedule:
-    - cron: "0 8,12,18,21 * * *"  # 每天 8/12/18/21点推送
-  workflow_dispatch:  # 允许手动点一下运行
+    - cron: "0 8,12,18,22 * * *"  # 每天 8/12/18/22 点推送
+  workflow_dispatch:  # 允许手动运行
 
 jobs:
-  push:
+  run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - name: Install requests
-        run: pip install requests
-      - name: Run push
-        run: python push_hot.py
+      - run: pip install requests
+      - run: python push_hot.py
