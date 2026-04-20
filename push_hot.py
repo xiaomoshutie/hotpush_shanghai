@@ -1,11 +1,11 @@
 import requests
-import time
 
 # ===================== 你的配置 =====================
-PUSHPLUS_TOKEN = "223d880dd65a470093c4e541acbcc4b7"
+SERVER_KEY = "SCT153697TKg0PE4GwaENyIfu9ANvinW36"
 # ====================================================
 
-def get_toutiao_shanghai():
+# 获取头条热榜
+def get_toutiao():
     try:
         url = "https://www.topbiz360.cn/api/open/hot/list?code=toutiao"
         res = requests.get(url, timeout=10)
@@ -18,9 +18,10 @@ def get_toutiao_shanghai():
             lines.append(f"{i}. {title} {hot}")
         return "\n".join(lines)
     except:
-        return "【今日头条热榜获取失败】"
+        return "【今日头条获取失败】"
 
-def get_douyin_shanghai():
+# 获取抖音热榜
+def get_douyin():
     try:
         url = "https://www.topbiz360.cn/api/open/hot/list?code=douyin"
         res = requests.get(url, timeout=10)
@@ -32,9 +33,10 @@ def get_douyin_shanghai():
             lines.append(f"{i}. {title}")
         return "\n".join(lines)
     except:
-        return "\n【抖音热榜获取失败】"
+        return "\n【抖音获取失败】"
 
-def get_wechat_shanghai():
+# 获取微信热榜
+def get_wechat():
     try:
         url = "https://www.topbiz360.cn/api/open/hot/list?code=wechat"
         res = requests.get(url, timeout=10)
@@ -46,25 +48,25 @@ def get_wechat_shanghai():
             lines.append(f"{i}. {title}")
         return "\n".join(lines)
     except:
-        return "\n【公众号热榜获取失败】"
+        return "\n【微信热榜获取失败】"
 
-def push_to_wechat(content):
-    url = "http://www.pushplus.plus/send"
+# 推送到 Server酱
+def push_server(title, content):
+    url = f"https://sctapi.ftqq.com/{SERVER_KEY}.send"
     data = {
-        "token": PUSHPLUS_TOKEN,
-        "title": "🔥 上海实时热榜",
-        "content": content,
-        "template": "txt"
+        "title": title,
+        "desp": content
     }
     try:
-        requests.post(url, json=data, timeout=10)
+        requests.post(url, data=data)
     except:
         pass
 
+# 主程序
 if __name__ == "__main__":
-    t1 = get_toutiao_shanghai()
-    t2 = get_douyin_shanghai()
-    t3 = get_wechat_shanghai()
+    t1 = get_toutiao()
+    t2 = get_douyin()
+    t3 = get_wechat()
     content = t1 + t2 + t3
-    push_to_wechat(content)
-    print("推送完成")
+    push_server("🔥 上海实时热榜（头条+抖音+微信）", content)
+    print("推送成功！")
