@@ -2,7 +2,7 @@ import requests
 import time
 
 # ===================== 你的配置 =====================
-PUSHPLUS_TOKEN = "223d880dd65a470093c4e541acbcc4b8"
+PUSHPLUS_TOKEN = "223d880dd65a470093c4e541acbcc4b7"
 # ====================================================
 
 def get_toutiao_shanghai():
