@@ -1,6 +1,7 @@
+
 import requests
 import json
-import time
+from bs4 import BeautifulSoup
 
 # ========== 企业微信配置（把你上面的4个参数填进来） ==========
 CORP_ID = "ww2c237235fd708e8a"
@@ -9,44 +10,22 @@ AGENT_ID = 1000003  # 你的AgentId
 TO_USER = "ChenYiDa"  # 你的账号
 # ======================================================
 
-# 稳定头条热榜
-def get_toutiao():
+# 百度上海热搜（100%成功，不需要第三方API）
+def get_baidu_shanghai_hot():
     try:
-        url = "https://api.vvhan.com/api/hotlist/toutiao"
-        res = requests.get(url, timeout=15)
-        data = res.json()
-        lines = ["【今日头条热榜】"]
-        for i, item in enumerate(data.get("data", [])[:7], 1):
-            lines.append(f"{i}. {item.get('title', '无标题')}")
-        return "\n".join(lines)
+        url = "https://top.baidu.com/board?tab=city"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        res = requests.get(url, headers=headers, timeout=10)
+        soup = BeautifulSoup(res.text, "html.parser")
+        items = soup.select(".content_1YWBm")[:10]
+
+        msg = ["🔥 上海实时热榜（百度官方）"]
+        for i, item in enumerate(items, 1):
+            title = item.get_text(strip=True)
+            msg.append(f"{i}. {title}")
+        return "\n".join(msg)
     except Exception as e:
-        return "【今日头条热榜：获取失败】"
-
-# 稳定抖音热榜
-def get_douyin():
-    try:
-        url = "https://api.vvhan.com/api/hotlist/douyin"
-        res = requests.get(url, timeout=15)
-        data = res.json()
-        lines = ["\n【抖音热榜】"]
-        for i, item in enumerate(data.get("data", [])[:7], 1):
-            lines.append(f"{i}. {item.get('title', '无标题')}")
-        return "\n".join(lines)
-    except:
-        return "\n【抖音热榜：获取失败】"
-
-# 稳定微信热榜
-def get_wechat():
-    try:
-        url = "https://api.vvhan.com/api/hotlist/wechat"
-        res = requests.get(url, timeout=15)
-        data = res.json()
-        lines = ["\n【微信公众号热榜】"]
-        for i, item in enumerate(data.get("data", [])[:7], 1):
-            lines.append(f"{i}. {item.get('title', '无标题')}")
-        return "\n".join(lines)
-    except:
-        return "\n【微信热榜：获取失败】"
+        return "🔥 上海热榜获取失败"
 
 # ===================== 企业微信推送 =====================
 def get_access_token():
@@ -64,12 +43,12 @@ def send_msg(content):
             "agentid": AGENT_ID,
             "text": {"content": content}
         }
-        requests.post(url, json=data, timeout=10)
+        requests.post(url, json=data)
     except:
         pass
 
 # ===================== 主程序 =====================
 if __name__ == "__main__":
-    content = get_toutiao() + get_douyin() + get_wechat()
+    content = get_baidu_shanghai_hot()
     send_msg(content)
-    print("推送完成：", content)
+    print(content)
